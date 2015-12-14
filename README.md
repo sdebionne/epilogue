@@ -361,11 +361,69 @@ var users = rest.resource({
 });
 ```
 
+### Association
+
+If association is enabled for the resource:
+
+```javascript
+var users = rest.resource({
+    model: User,
+    endpoints: ['/users', '/users/:id'],
+    associations: true
+});
+```
+
+endpoints are generated for the associated models (e.g. user's projects) like so:
+
+```bash
+# get the third page of results
+$ curl http://localhost/users/1/projects
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Range: items 200-299/3230
+
+[
+  { "name": "Epilogue", ... },
+]
+```
+
+By default, the source endpoints (`/users` and `/users/:id`) are also auto-populated with the associated models:
+
+```bash
+# get the third page of results
+$ curl http://localhost/users
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Range: items 200-299/3230
+
+[
+  { "name": "James Conrad", ... },
+  projects: [
+    { "name": "Epilogue", ... },
+  ]
+]
+```
+
+The behavior of the associations can be customized with:
+
+```javascript
+var users = rest.resource({
+    model: User,
+    endpoints: ['/users', '/users/:id'],
+    associations: {
+      removeForeignKeys: true,
+      autoPopulate: { read: true, list: false },
+    }
+});
+```
+
 ## Epilogue API
 
 #### initialize()
 
-Set defaults and give epilouge a reference to your express app.  Send the following parameters:
+Set defaults and gives epilogue a reference to your express app.  Send the following parameters:
 
 > ###### app
 >
@@ -393,12 +451,24 @@ Create a resource and CRUD actions given a Sequelize model and endpoints.  Accep
 >
 > ###### actions
 >
-> Create only the specified list of actions for the resource.  Options include `create`, `list`, `read`, `update`, and `delete`.  Defaults to all.
+> Create only the specified array of actions for the resource.  Options include `create`, `list`, `read`, `update`, and `delete`.  Defaults to all. (e.g., `['read', 'list']`)
 >
 > ###### excludeAttributes
 >
 > Explicitly remove the specified list of attributes from read and list operations
 >
+> ###### associations
+>
+> Automatically include associations based on the schema of your models and generate endpoints for the associated models. Defaults to false.
+>
+> Options include:
+>   - `removeForeignKeys` as `boolean`. Removes the foreign keys from the result. Default to `false`.
+>   - `autoPopulate` as `{ read: boolean, list: boolean, ... }`. Include every associated models for the given controllers. Default to `true` for all controllers.
+>
+>
+> ###### include
+>
+> Manually include whatever models you want, as whatever key you want them included in.
 
 ### Milestones & Context
 
