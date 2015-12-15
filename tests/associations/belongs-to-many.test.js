@@ -370,7 +370,7 @@ describe('Associations(BelongsToMany)', function() {
     // TESTS
     describe('list', function() {
 
-      it('should return all records with associated objects', function(done) {
+      it('should return all records without associated objects', function(done) {
         request.get({
           url: test.baseUrl + '/people'
         }, function(error, response, body) {
@@ -459,8 +459,6 @@ describe('Associations(BelongsToMany)', function() {
           var result = _.isObject(body) ? body : JSON.parse(body);
           expect(result).to.be.an('object');
           expect(result.id).to.be.eql(1);
-          // expect(result.people).to.be.an('array');
-          // expect(result.people.length).to.be.eql(1);
           done();
         });
       });
@@ -487,7 +485,7 @@ describe('Associations(BelongsToMany)', function() {
 
     describe('read', function() {
 
-      it('should return one record with associated objects', function(done) {
+      it('should return one record without associated objects', function(done) {
         request.get({
           url: test.baseUrl + '/people/1'
         }, function(error, response, body) {
